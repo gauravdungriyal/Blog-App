@@ -123,9 +123,14 @@ async function createBlogPage(params) {
 
             const method = isEdit ? 'PUT' : 'POST';
             const endpoint = isEdit ? `/blogs/${params.id}` : '/blogs';
+            const token = localStorage.getItem('token');
 
             await apiRequest(endpoint, {
                 method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ title, content, image_url, category })
             });
 
