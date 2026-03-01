@@ -37,7 +37,8 @@ app.get(/.*/, (req, res) => {
 });
 
 // Start Server and Seed Default User
-if (process.env.NODE_ENV !== 'production') {
+if (!process.env.VERCEL) {
+
     app.listen(PORT, async () => {
         console.log(`Server running on port ${PORT}`);
 
