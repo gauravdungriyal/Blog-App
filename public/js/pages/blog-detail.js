@@ -14,7 +14,7 @@ async function blogDetailPage(params) {
                         <div>
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
                                 <div class="author-name" style="font-size: 1rem;">${blog.profiles?.name || 'Anonymous'}</div>
-                                ${currentUser && currentUser.id !== blog.author_id ? `
+                                ${!currentUser || currentUser.id != blog.author_id ? `
                                     <button id="follow-btn" class="btn btn-outline" style="padding: 0.2rem 0.6rem; font-size: 0.8rem; border-color: var(--accent); color: var(--accent); border-radius: 4px;">Follow</button>
                                 ` : ''}
                             </div>
@@ -167,6 +167,11 @@ async function initInteractions(blogId, currentUser, blog) {
     const followBtn = document.getElementById('follow-btn');
     if (followBtn) {
         followBtn.addEventListener('click', async () => {
+            if (!auth.isAuthenticated()) {
+                showToast('Please login to follow', 'error');
+                return;
+            }
+
             const isFollowing = followBtn.textContent === 'Following';
 
             // Optimistic Update

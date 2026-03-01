@@ -68,7 +68,7 @@ async function homePage(params) {
                 const isFollowing = u.is_following;
                 const btnClass = isFollowing ? 'btn btn-outline' : 'btn btn-primary';
                 const btnText = isFollowing ? 'Following' : 'Follow';
-                const isSelf = auth.isAuthenticated() && auth.user.id === u.id;
+                const isSelf = auth.isAuthenticated() && auth.user?.id == u.id;
 
                 return `
                                 <div style="min-width: 140px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">

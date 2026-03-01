@@ -19,7 +19,7 @@ async function userProfilePage(params) {
             : headerFallback;
 
         let followBtn = '';
-        const isSelf = auth.isAuthenticated() && auth.user.id === user.id;
+        const isSelf = auth.isAuthenticated() && auth.user?.id == user.id;
 
         if (!isSelf) {
             const btnClass = isFollowing ? 'btn btn-outline' : 'btn btn-primary';
