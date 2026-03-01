@@ -40,30 +40,6 @@ async function homePage(params) {
             </div>
         `;
 
-        const blogsHtml = blogs.map(blog => {
-            const date = new Date(blog.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-            return `
-                <div class="blog-item" onclick="router.navigate('/blog/${blog.id}')">
-                    <div class="blog-item-content">
-                        ${blog.category ? `<div style="color: var(--text-main); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem;">${blog.category}</div>` : ''}
-                        <h2 class="serif" style="font-size: 1.4rem; margin-bottom: 0.5rem; line-height: 1.3;">${blog.title}</h2>
-                        <p class="excerpt" style="font-size: 1rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1rem;">${blog.content}</p>
-                        <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
-                            <span>${date}</span>
-                            <span>·</span>
-                            <span>${Math.ceil(blog.content.length / 1000)} min read</span>
-                            <span class="tag" style="margin-left: 0.5rem;">Selected for you</span>
-                        </div>
-                    </div>
-                    ${blog.cover_image ? `
-                        <div class="blog-item-image">
-                            <img src="${blog.cover_image}" alt="${blog.title}">
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-        }).join('');
-
         let usersHtml = '';
         const filteredUsers = users.filter(u => u.id != auth.user?.id);
         if (filteredUsers && filteredUsers.length > 0) {
