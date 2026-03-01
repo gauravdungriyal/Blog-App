@@ -277,11 +277,16 @@ exports.searchUsers = async (req, res) => {
         const { query, currentUserId } = req.query;
         if (!query) return res.status(200).json([]);
 
-        const { data: profiles, error } = await supabase
+        let queryBuilder = supabase
             .from('profiles')
             .select('id, name, avatar_url, username')
-            .or(`username.ilike.%${query}%,name.ilike.%${query}%`)
-            .limit(10);
+            .or(`username.ilike.%${query}%,name.ilike.%${query}%`);
+
+        if (currentUserId) {
+            queryBuilder = queryBuilder.neq('id', currentUserId);
+        }
+
+        const { data: profiles, error } = await queryBuilder.limit(10);
 
         if (error) throw error;
 
