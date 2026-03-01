@@ -188,7 +188,12 @@ async function getFollowingList(userId) {
 }
 
 async function searchUsers(query) {
-    return apiRequest(`/users/search?query=${encodeURIComponent(query)}`);
+    let url = `/users/search?query=${encodeURIComponent(query)}`;
+    const currentUserId = auth.user?.id;
+    if (currentUserId) {
+        url += `&currentUserId=${currentUserId}`;
+    }
+    return apiRequest(url);
 }
 
 async function getUserByUsername(username) {

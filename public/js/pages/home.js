@@ -65,15 +65,29 @@ async function homePage(params) {
                     <div style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem; scrollbar-width: none;">
                         ${users.map(u => {
                 const initial = (u.name || 'U').charAt(0).toUpperCase();
+                const isFollowing = u.is_following;
+                const btnClass = isFollowing ? 'btn btn-outline' : 'btn btn-primary';
+                const btnText = isFollowing ? 'Following' : 'Follow';
+                const isSelf = auth.isAuthenticated() && auth.user.id === u.id;
+
                 return `
-                                <a href="/u/${u.username}" data-link style="text-decoration: none; min-width: 120px; text-align: center; color: inherit;">
-                                    ${u.avatar_url
-                        ? `<img src="${u.avatar_url}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 0.5rem;">`
-                        : `<div style="width: 50px; height: 50px; border-radius: 50%; background: var(--border); margin: 0 auto 0.5rem; display: flex; align-items: center; justify-content: center; font-weight: bold;">${initial}</div>`
+                                <div style="min-width: 140px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                                    <a href="/u/${u.username}" data-link style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;">
+                                        ${u.avatar_url
+                        ? `<img src="${u.avatar_url}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 0.25rem;">`
+                        : `<div style="width: 50px; height: 50px; border-radius: 50%; background: var(--border); margin: 0 auto 0.25rem; display: flex; align-items: center; justify-content: center; font-weight: bold;">${initial}</div>`
                     }
-                                    <div style="font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${u.name}</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);">@${u.username}</div>
-                                </a>
+                                        <div style="font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">${u.name}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);">@${u.username}</div>
+                                    </a>
+                                    ${!isSelf ? `
+                                        <button class="btn ${btnClass} search-follow-btn" 
+                                                data-user-id="${u.id}" 
+                                                style="padding: 0.3rem 1rem; font-size: 0.8rem; width: 90px;">
+                                            ${btnText}
+                                        </button>
+                                    ` : '<div style="height: 28px;"></div>'}
+                                </div>
                             `;
             }).join('')}
                     </div>
@@ -95,6 +109,33 @@ async function homePage(params) {
                 </div>
             </div>
         `;
+
+        // Add event listeners for follow buttons
+        document.querySelectorAll('.search-follow-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if (!auth.isAuthenticated()) {
+                    showToast('Please login to follow', 'error');
+                    return;
+                }
+
+                const userId = btn.getAttribute('data-user-id');
+                const originalText = btn.innerText;
+                btn.innerText = '...';
+                btn.disabled = true;
+
+                try {
+                    const res = await toggleFollow(userId);
+                    btn.innerText = res.isFollowing ? 'Following' : 'Follow';
+                    btn.className = `btn ${res.isFollowing ? 'btn-outline' : 'btn-primary'} search-follow-btn`;
+                } catch (err) {
+                    showToast(err.message);
+                    btn.innerText = originalText;
+                } finally {
+                    btn.disabled = false;
+                }
+            });
+        });
     } catch (err) {
         showToast(err.message);
     }

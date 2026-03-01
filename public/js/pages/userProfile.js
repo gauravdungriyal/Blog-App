@@ -19,7 +19,9 @@ async function userProfilePage(params) {
             : headerFallback;
 
         let followBtn = '';
-        if (auth.isAuthenticated() && auth.user.id !== user.id) {
+        const isSelf = auth.isAuthenticated() && auth.user.id === user.id;
+
+        if (!isSelf) {
             const btnClass = isFollowing ? 'btn btn-outline' : 'btn btn-primary';
             const btnText = isFollowing ? 'Following' : 'Follow';
             followBtn = `<button id="profile-follow-btn" class="${btnClass}" style="padding: 0.6rem 2rem;">${btnText}</button>`;
@@ -69,6 +71,11 @@ async function userProfilePage(params) {
         const fb = document.getElementById('profile-follow-btn');
         if (fb) {
             fb.addEventListener('click', async () => {
+                if (!auth.isAuthenticated()) {
+                    showToast('Please login to follow', 'error');
+                    return;
+                }
+
                 const originalText = fb.innerText;
                 fb.innerText = '...';
                 fb.disabled = true;
