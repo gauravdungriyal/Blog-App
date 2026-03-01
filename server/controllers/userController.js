@@ -274,17 +274,36 @@ exports.getFollowing = async (req, res) => {
 
 exports.searchUsers = async (req, res) => {
     try {
-        const { query } = req.query;
+        const { query, currentUserId } = req.query;
         if (!query) return res.status(200).json([]);
 
-        const { data, error } = await supabase
+        const { data: profiles, error } = await supabase
             .from('profiles')
             .select('id, name, avatar_url, username')
             .or(`username.ilike.%${query}%,name.ilike.%${query}%`)
             .limit(10);
 
         if (error) throw error;
-        res.status(200).json(data);
+
+        let profilesWithStatus = profiles;
+        if (currentUserId && profiles.length > 0) {
+            const userIds = profiles.map(p => p.id);
+            const { data: follows, error: followsError } = await supabase
+                .from('follows')
+                .select('following_id')
+                .eq('follower_id', currentUserId)
+                .in('following_id', userIds);
+
+            if (!followsError && follows) {
+                const followingSet = new Set(follows.map(f => f.following_id));
+                profilesWithStatus = profiles.map(p => ({
+                    ...p,
+                    is_following: followingSet.has(p.id)
+                }));
+            }
+        }
+
+        res.status(200).json(profilesWithStatus);
     } catch (err) {
         console.error('SearchUsers Error:', err);
         res.status(500).json({ error: 'Internal Server Error' });
