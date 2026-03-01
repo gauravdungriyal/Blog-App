@@ -25,4 +25,8 @@ router.get('/:id/comments', interactionController.getComments);
 router.post('/:id/comments', authMiddleware, interactionController.addComment);
 router.delete('/:id/comments/:commentId', authMiddleware, interactionController.deleteComment);
 
+// AI Category Detection
+const categoryController = require('../controllers/categoryController');
+router.post('/detect-category', authMiddleware, categoryController.detectCategory);
+
 module.exports = router;

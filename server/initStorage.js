@@ -45,8 +45,14 @@ const initStorage = async () => {
             }
         }
     } catch (err) {
-        console.error('Fatal Storage Initialization Error:', err.message);
-        console.warn('The server will continue to run, but uploads might fail until buckets are created.');
+        const isTimeout = err.message?.includes('fetch failed') || err.code === 'UND_ERR_CONNECT_TIMEOUT';
+        if (isTimeout) {
+            console.error('\x1b[31m%s\x1b[0m', 'STORAGE INITIALIZATION FAILED: Could not reach Supabase.');
+            console.error('\x1b[33m%s\x1b[0m', 'Possible cause: Regional networking restrictions or ISP block.');
+        } else {
+            console.error('Fatal Storage Initialization Error:', err.message);
+        }
+        console.warn('The server will continue to run, but storage features may be unavailable.');
     }
 };
 

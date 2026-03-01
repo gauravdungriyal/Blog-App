@@ -2,16 +2,36 @@ const { supabase, supabaseAdmin } = require('../config/supabase');
 
 exports.getBlogs = async (req, res) => {
     try {
-        const { data, error } = await supabase
-            .from('blogs')
-            .select('*, profiles(name)')
-            .order('created_at', { ascending: false });
+        const { search, category } = req.query;
 
-        if (error) throw error;
-        res.status(200).json(data);
+        // Start building query
+        let supabaseQuery = supabase
+            .from('blogs')
+            .select('*, profiles(name)');
+
+        if (search && search.trim()) {
+            const searchTerm = search.trim();
+            // Use double quotes for values in or() to handle spaces correctly
+            const filter = `title.ilike."%${searchTerm}%",content.ilike."%${searchTerm}%"`;
+            console.log('Applying filter:', filter);
+            supabaseQuery = supabaseQuery.or(filter);
+        }
+
+        if (category) {
+            supabaseQuery = supabaseQuery.eq('category', category);
+        }
+
+        const { data, error } = await supabaseQuery.order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Supabase Query Error:', error);
+            return res.status(error.code === 'PGRST116' ? 404 : 400).json({ error: error.message });
+        }
+
+        res.status(200).json(data || []);
     } catch (err) {
-        console.error('GetBlogs Error:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error('SERVER FATAL ERROR [GetBlogs]:', err);
+        res.status(500).json({ error: 'Internal Server Error', message: err.message });
     }
 };
 
@@ -50,7 +70,7 @@ exports.getMyBlogs = async (req, res) => {
 
 exports.createBlog = async (req, res) => {
     try {
-        const { title, content, image_url } = req.body;
+        const { title, content, image_url, category } = req.body;
         if (!title || !content) {
             return res.status(400).json({ error: 'Title and content are required' });
         }
@@ -61,6 +81,7 @@ exports.createBlog = async (req, res) => {
                 title,
                 content,
                 image_url: image_url || null,
+                category: category || null,
                 author_id: req.user.id
             }])
             .select();
@@ -92,11 +113,11 @@ exports.createBlog = async (req, res) => {
 exports.updateBlog = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, content, image_url } = req.body;
+        const { title, content, image_url, category } = req.body;
 
         const { data, error } = await req.supabase
             .from('blogs')
-            .update({ title, content, image_url: image_url || null })
+            .update({ title, content, image_url: image_url || null, category: category || null })
             .eq('id', id)
             .eq('author_id', req.user.id) // Ensure ownership
             .select();

@@ -44,7 +44,14 @@ const seedUser = async () => {
 
         console.log('Seed successful! Default user created.');
     } catch (err) {
-        console.error('Seed Error:', err);
+        const isTimeout = err.message?.includes('fetch failed') || err.code === 'UND_ERR_CONNECT_TIMEOUT';
+        if (isTimeout) {
+            console.error('\x1b[31m%s\x1b[0m', 'CRITICAL NETWORK ERROR: Connection to Supabase timed out.');
+            console.error('\x1b[33m%s\x1b[0m', 'TIP: This is often caused by regional ISP blocks (common in India).');
+            console.log('\x1b[36m%s\x1b[0m', 'Try: 1. Using a VPN | 2. Changing DNS to 8.8.8.8 | 3. Checking your internet connection');
+        } else {
+            console.error('Seed Error:', err);
+        }
     }
 };
 

@@ -10,6 +10,7 @@ const userRoutes = require('./routes/userRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const seedUser = require('./seed');
 const initStorage = require('./initStorage');
+const checkConnectivity = require('./utils/networkCheck');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -41,14 +42,16 @@ app.get(/.*/, (req, res) => {
 
 // Start Server and Seed Default User
 if (!process.env.VERCEL) {
-
-    app.listen(PORT, async () => {
+    app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
 
-        // Seed default user on startup
+        // Run network diagnostic
+        checkConnectivity();
+
+        // Seed default user and init storage on startup (non-blocking)
         if (process.env.NODE_ENV !== 'test') {
-            await seedUser();
-            await initStorage();
+            seedUser().catch(err => console.error('Startup Seed Error:', err));
+            initStorage().catch(err => console.error('Startup Storage Error:', err));
         }
     });
 }
