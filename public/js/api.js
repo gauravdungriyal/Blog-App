@@ -5,16 +5,36 @@ async function apiRequest(endpoint, options = {}) {
     // Ensure the endpoint hits our isolated backend router
     const finalEndpoint = endpoint.startsWith('/api') ? endpoint : `/api${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
 
-    const defaultOptions = {
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        ...options
+    const token = localStorage.getItem('token');
+    const headers = {
+        'Content-Type': 'application/json',
+        ...(options.headers || {})
     };
 
+    if (token && !headers['Authorization']) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Remove Content-Type if we're sending FormData
+    if (options.body instanceof FormData) {
+        delete headers['Content-Type'];
+    }
+
     try {
-        const response = await fetch(finalEndpoint, defaultOptions);
+        const response = await fetch(finalEndpoint, {
+            ...options,
+            headers
+        });
         const data = await response.json();
+
+        if (response.status === 401) {
+            // Token might be expired or invalid
+            localStorage.removeItem('token');
+            localStorage.removeItem('blog_user');
+            if (window.auth) window.auth.user = null;
+            if (window.router) window.router.navigate('/login');
+            throw new Error('Your session has expired. Please login again.');
+        }
 
         if (!response.ok) {
             throw new Error(data.error || 'Something went wrong');
@@ -147,13 +167,8 @@ async function uploadBlogImage(file) {
 }
 
 async function detectCategory(title, content, hashtags = '') {
-    const token = localStorage.getItem('token');
     return apiRequest('/blogs/detect-category', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify({ title, content, hashtags })
     });
 }
