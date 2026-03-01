@@ -191,7 +191,7 @@ exports.getFollowers = async (req, res) => {
 
         const { data: profiles, error: profilesError } = await supabase
             .from('profiles')
-            .select('id, name, avatar_url')
+            .select('id, name, avatar_url, username')
             .in('id', followerIds);
 
         if (profilesError) throw profilesError;

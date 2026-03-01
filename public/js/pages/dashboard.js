@@ -221,10 +221,10 @@ function renderUserList(users) {
 
         html += `
             <div class="user-list-item">
-                <div class="user-list-info">
+                <a href="/u/${u.username}" data-link class="user-list-info" style="text-decoration: none; color: inherit;" onclick="closeModal('listModal')">
                     ${avatar}
                     <div class="user-list-name">${u.name}</div>
-                </div>
+                </a>
                 ${buttonHtml}
             </div>
         `;
