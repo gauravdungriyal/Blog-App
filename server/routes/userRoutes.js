@@ -5,7 +5,9 @@ const authMiddleware = require('../middleware/auth');
 
 const upload = require('../middleware/upload');
 
-// Public route
+// Public routes
+router.get('/search', userController.searchUsers);
+router.get('/username/:username', userController.getUserByUsername);
 router.get('/:id/follow-status', userController.getFollowStatus);
 router.get('/:id/followers', userController.getFollowers);
 router.get('/:id/following', userController.getFollowing);

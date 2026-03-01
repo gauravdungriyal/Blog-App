@@ -241,7 +241,7 @@ exports.getFollowing = async (req, res) => {
 
         const { data: profiles, error: profilesError } = await supabase
             .from('profiles')
-            .select('id, name, avatar_url')
+            .select('id, name, avatar_url, username')
             .in('id', followingIds);
 
         if (profilesError) throw profilesError;
@@ -268,6 +268,45 @@ exports.getFollowing = async (req, res) => {
         res.status(200).json(profilesWithStatus);
     } catch (err) {
         console.error('GetFollowing Error:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+exports.searchUsers = async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (!query) return res.status(200).json([]);
+
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('id, name, avatar_url, username')
+            .or(`username.ilike.%${query}%,name.ilike.%${query}%`)
+            .limit(10);
+
+        if (error) throw error;
+        res.status(200).json(data);
+    } catch (err) {
+        console.error('SearchUsers Error:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+exports.getUserByUsername = async (req, res) => {
+    try {
+        const { username } = req.params;
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('id, name, avatar_url, username')
+            .eq('username', username)
+            .single();
+
+        if (error) {
+            if (error.code === 'PGRST116') return res.status(404).json({ error: 'User not found' });
+            throw error;
+        }
+        res.status(200).json(data);
+    } catch (err) {
+        console.error('GetUserByUsername Error:', err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };

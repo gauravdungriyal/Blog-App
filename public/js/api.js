@@ -187,6 +187,18 @@ async function getFollowingList(userId) {
     return apiRequest(url);
 }
 
+async function searchUsers(query) {
+    return apiRequest(`/users/search?query=${encodeURIComponent(query)}`);
+}
+
+async function getUserByUsername(username) {
+    return apiRequest(`/users/username/${username}`);
+}
+
+async function getBlogsByAuthor(authorId) {
+    return apiRequest(`/blogs/author/${authorId}`);
+}
+
 // --- Notification APIs ---
 
 async function getNotifications() {

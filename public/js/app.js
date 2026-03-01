@@ -8,6 +8,7 @@ const routes = {
     '/dashboard': dashboardPage,
     '/notifications': renderNotifications,
     '/blog/:id': blogDetailPage,
+    '/u/:username': userProfilePage,
     '/create-blog': createBlogPage,
     '/edit-blog/:id': createBlogPage // Reusing create page for edit
 };

@@ -68,6 +68,23 @@ exports.getMyBlogs = async (req, res) => {
     }
 };
 
+exports.getBlogsByAuthor = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { data, error } = await supabase
+            .from('blogs')
+            .select('*, profiles(name, username, avatar_url)')
+            .eq('author_id', id)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        res.status(200).json(data);
+    } catch (err) {
+        console.error('GetBlogsByAuthor Error:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 exports.createBlog = async (req, res) => {
     try {
         const { title, content, image_url, category } = req.body;
