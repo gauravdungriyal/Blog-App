@@ -31,7 +31,8 @@ async function dashboardPage() {
                     <div style="display: flex; align-items: center; gap: 1.5rem;">
                         ${avatarHtml}
                         <div>
-                            <h1 style="font-size: 2rem; margin-bottom: 0.25rem;">Hey, ${user.name ? user.name.split(' ')[0] : 'there'}!</h1>
+                            <h1 style="font-size: 2rem; margin-bottom: 0.1rem;">Hey, ${user.name ? user.name.split(' ')[0] : 'there'}!</h1>
+                            <div style="color: var(--accent); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">@${user.username || 'user'}</div>
                             <div style="color: var(--text-muted); font-size: 0.95rem; display: flex; gap: 1rem;">
                                 <span style="cursor: pointer;" onclick="openFollowersModal()"><strong id="followers-count">${stats.followers}</strong> Followers</span>
                                 <span style="cursor: pointer;" onclick="openFollowingModal()"><strong id="following-count">${stats.following}</strong> Following</span>
@@ -62,6 +63,14 @@ async function dashboardPage() {
                             <div class="form-group">
                                 <label>Name</label>
                                 <input type="text" id="edit-name" value="${user.name || ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Username</label>
+                                <div style="position: relative;">
+                                    <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);">@</span>
+                                    <input type="text" id="edit-username" value="${user.username || ''}" required style="padding-left: 2.2rem;">
+                                </div>
+                                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">3-20 characters, letters, numbers, and underscores.</p>
                             </div>
                             <div class="form-group">
                                 <label>Profile Picture</label>
@@ -119,6 +128,7 @@ async function dashboardPage() {
             submitBtn.disabled = true;
 
             const name = document.getElementById('edit-name').value;
+            const username = document.getElementById('edit-username').value;
             const avatarFile = document.getElementById('edit-avatar-file').files[0];
 
             try {
@@ -129,7 +139,7 @@ async function dashboardPage() {
                     avatar_url = uploadRes.url;
                 }
 
-                const data = await updateUserProfile(name, avatar_url);
+                const data = await updateUserProfile(name, avatar_url, username);
                 auth.setUser(data.profile); // Updates localStorage and Sidebar
                 showToast('Profile updated!', 'success');
                 closeModal('editProfileModal');

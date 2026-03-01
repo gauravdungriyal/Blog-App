@@ -124,19 +124,52 @@ exports.googleSession = async (req, res) => {
 
         // Ensure user has a profile record
         const name = user.user_metadata?.full_name || user.email.split('@')[0];
-        const email = user.email;
         const avatar_url = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
+
+        // Check if profile exists to determine if we need to generate a username
+        const { data: existingProfile } = await supabaseAdmin
+            .from('profiles')
+            .select('username')
+            .eq('id', user.id)
+            .single();
+
+        let username = existingProfile?.username;
+
+        if (!username) {
+            // Generate unique username
+            const base = (user.user_metadata?.full_name || user.email.split('@')[0])
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '')
+                .substring(0, 15);
+
+            // Initial attempt
+            username = base || 'user';
+
+            // Check for collision
+            const { data: collision } = await supabaseAdmin
+                .from('profiles')
+                .select('username')
+                .eq('username', username)
+                .single();
+
+            if (collision) {
+                username = `${username}${Math.random().toString(36).substring(7, 10)}`;
+            }
+        }
 
         // Try to insert cleanly; if it exists, it ignores or updates
         const { error: profileError } = await supabaseAdmin
             .from('profiles')
-            .upsert({ id: user.id, name, avatar_url }, { onConflict: 'id' });
+            .upsert({ id: user.id, name, avatar_url, username }, { onConflict: 'id' });
 
         if (profileError) {
             console.error('Profile Upsert Error during Google Login:', profileError);
         }
 
-        res.status(200).json({ message: 'Session created successfully', user: { ...user, name, avatar_url } });
+        res.status(200).json({
+            message: 'Session created successfully',
+            user: { ...user, name, avatar_url, username }
+        });
     } catch (err) {
         console.error('Google Session Error:', err);
         res.status(500).json({ error: 'Internal Server Error' });

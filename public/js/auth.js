@@ -64,10 +64,12 @@ const auth = {
                 : fallbackHtml;
 
             authHtml = `
-                <div style="padding: 1rem;">
                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
                         ${avatarHtml}
-                        <p class="author-name" style="margin: 0; text-transform: capitalize; font-weight: 600;">${this.user.name || this.user.email.split('@')[0]}</p>
+                        <div>
+                            <p class="author-name" style="margin: 0; text-transform: capitalize; font-weight: 600;">${this.user.name || this.user.email.split('@')[0]}</p>
+                            <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">@${this.user.username || 'user'}</p>
+                        </div>
                     </div>
                     <button class="btn btn-outline" style="width: 100%" onclick="auth.logout()">Logout</button>
                 </div>

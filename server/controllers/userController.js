@@ -102,20 +102,31 @@ exports.getDashboardStats = async (req, res) => {
 exports.updateProfile = async (req, res) => {
     try {
         const user_id = req.user.id;
-        const { name, avatar_url } = req.body;
+        const { name, avatar_url, username } = req.body;
 
         if (!name) {
             return res.status(400).json({ error: 'Name is required' });
         }
 
+        if (username) {
+            if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+                return res.status(400).json({ error: 'Username must be 3-20 characters long and contain only letters, numbers, and underscores.' });
+            }
+        }
+
         const { data, error } = await req.supabase
             .from('profiles')
-            .update({ name, avatar_url })
+            .update({ name, avatar_url, username })
             .eq('id', user_id)
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            if (error.code === '23505') { // Unique violation
+                return res.status(400).json({ error: 'Username is already taken' });
+            }
+            throw error;
+        }
 
         res.status(200).json({ message: 'Profile updated successfully', profile: data });
     } catch (err) {

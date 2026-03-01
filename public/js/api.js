@@ -125,7 +125,7 @@ async function getDashboardStats() {
     });
 }
 
-async function updateUserProfile(name, avatar_url) {
+async function updateUserProfile(name, avatar_url, username) {
     const token = localStorage.getItem('token');
     return apiRequest(`/users/profile`, {
         method: 'PUT',
@@ -133,7 +133,7 @@ async function updateUserProfile(name, avatar_url) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ name, avatar_url })
+        body: JSON.stringify({ name, avatar_url, username })
     });
 }
 
