@@ -1,4 +1,4 @@
-const API_URL = ''; // Relative to origin
+const API_URL = 'https://blog-app-mu-murex.vercel.app/'; // Relative to origin
 
 async function apiRequest(endpoint, options = {}) {
     // Ensure the endpoint hits our isolated backend router
