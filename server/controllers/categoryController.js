@@ -29,30 +29,42 @@ exports.detectCategory = async (req, res) => {
 
         console.log('Detecting category. API Key present:', !!process.env.GEMINI_API_KEY);
 
-        const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-pro'];
+        const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro'];
         let detected = null;
 
         if (process.env.GEMINI_API_KEY) {
-            for (const modelName of modelsToTry) {
-                try {
-                    console.log(`Trying Gemini model: ${modelName}`);
-                    const model = genAI.getGenerativeModel({ model: modelName });
-                    const sampleContent = content.substring(0, 2000);
-                    const prompt = `Classify this blog into ONE category: ${ALLOWED_CATEGORIES.join(', ')}. 
-                    Title: ${title}. Content: ${sampleContent}. Hashtags: ${hashtags || 'None'}. 
-                    Return ONLY the category name.`;
+            // We'll try v1 first as it's often more stable for 404 issues
+            const apiVersions = ['v1', 'v1beta'];
 
-                    const result = await model.generateContent(prompt);
-                    const response = await result.response;
-                    const text = response.text().trim();
+            for (const apiVersion of apiVersions) {
+                if (detected) break;
 
-                    detected = ALLOWED_CATEGORIES.find(cat => cat.toLowerCase() === text.toLowerCase());
-                    if (detected) {
-                        console.log(`Model ${modelName} successfully detected: ${detected}`);
-                        break;
+                for (const modelName of modelsToTry) {
+                    try {
+                        console.log(`Trying Gemini [${apiVersion}] model: ${modelName}`);
+                        // Specify the version in the request options
+                        const model = genAI.getGenerativeModel(
+                            { model: modelName },
+                            { apiVersion }
+                        );
+
+                        const sampleContent = content.substring(0, 2000);
+                        const prompt = `Classify this blog into ONE category: ${ALLOWED_CATEGORIES.join(', ')}. 
+                        Title: ${title}. Content: ${sampleContent}. Hashtags: ${hashtags || 'None'}. 
+                        Return ONLY the category name.`;
+
+                        const result = await model.generateContent(prompt);
+                        const response = await result.response;
+                        const text = response.text().trim();
+
+                        detected = ALLOWED_CATEGORIES.find(cat => cat.toLowerCase() === text.toLowerCase());
+                        if (detected) {
+                            console.log(`Model ${modelName} [${apiVersion}] successfully detected: ${detected}`);
+                            break;
+                        }
+                    } catch (aiErr) {
+                        console.warn(`Gemini model ${modelName} [${apiVersion}] failed:`, aiErr.message);
                     }
-                } catch (aiErr) {
-                    console.warn(`Gemini model ${modelName} failed:`, aiErr.message);
                 }
             }
         }
