@@ -1,4 +1,4 @@
-const API_URL = window.location.origin; // Dynamically set to the current domain
+const API_URL = 'https://buzzbyte.onrender.com'; // Dynamically set to the current domain
 
 
 async function apiRequest(endpoint, options = {}) {
