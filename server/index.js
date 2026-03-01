@@ -37,14 +37,19 @@ app.get(/.*/, (req, res) => {
 });
 
 // Start Server and Seed Default User
-app.listen(PORT, async () => {
-    console.log(`Server running on port ${PORT}`);
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, async () => {
+        console.log(`Server running on port ${PORT}`);
 
-    // Seed default user on startup
-    if (process.env.NODE_ENV !== 'test') {
-        await seedUser();
-        await initStorage();
-    }
-});
+        // Seed default user on startup
+        if (process.env.NODE_ENV !== 'test') {
+            await seedUser();
+            await initStorage();
+        }
+    });
+}
+
+module.exports = app;
+
 
 
