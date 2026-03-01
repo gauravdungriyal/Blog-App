@@ -20,14 +20,14 @@ async function homePage(params) {
         const blogs = await apiRequest(endpoint);
 
         const categories = [
-            'For you', 'Technology', 'Lifestyle', 'Health & Fitness', 'Travel', 'Food & Recipes',
-            'Education', 'Finance & Business', 'Entertainment & Sports'
+            'All', 'Technology', 'Lifestyle', 'Health & Fitness', 'Travel', 'Food & Recipes',
+            'Education', 'Finance & Business', 'Entertainment & Sports', 'News'
         ];
 
         const categoryNavHtml = `
             <div class="category-nav">
                 ${categories.map(cat => {
-            const isForYou = cat === 'For you';
+            const isForYou = cat === 'All';
             const catValue = isForYou ? '' : cat;
             const isActive = activeCategory === catValue || (isForYou && !activeCategory);
             const url = isForYou ? '/' : `/?category=${encodeURIComponent(cat)}`;
