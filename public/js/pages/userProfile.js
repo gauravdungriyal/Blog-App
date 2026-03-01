@@ -27,25 +27,26 @@ async function userProfilePage(params) {
             followBtn = `<button id="profile-follow-btn" class="${btnClass}" style="padding: 0.6rem 2rem;">${btnText}</button>`;
         }
 
-        let blogsHtml = blogs.map(blog => `
-            <div class="blog-item" style="cursor: pointer;" onclick="router.navigate('/blog/${blog.id}')">
-                <div class="blog-item-content" style="flex: 1;">
-                    <div class="blog-category" style="margin-bottom: 0.5rem; display: inline-block;">${blog.category || 'News'}</div>
-                    <h2 class="serif" style="margin-bottom: 0.5rem; font-size: 1.5rem;">${blog.title}</h2>
-                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                        ${blog.content.replace(/<[^>]*>/g, '').substring(0, 160)}...
-                    </p>
-                    <div class="blog-meta" style="font-size: 0.85rem;">
-                        <span>${new Date(blog.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+        let blogsHtml = blogs.map(blog => {
+            const date = new Date(blog.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            return `
+                <div class="blog-item" onclick="router.navigate('/blog/${blog.id}')" style="display: flex; justify-content: space-between; gap: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--border); cursor: pointer;">
+                    <div class="blog-item-content" style="flex: 1;">
+                        ${blog.category ? `<div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">${blog.category}</div>` : ''}
+                        <h2 class="serif" style="font-size: 1.6rem; margin-bottom: 0.75rem; color: var(--text-main); line-height: 1.25;">${blog.title}</h2>
+                        <p class="excerpt" style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            ${blog.content.replace(/<[^>]*>/g, '').substring(0, 160)}...
+                        </p>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">${date}</div>
                     </div>
+                    ${blog.image_url ? `
+                        <div class="blog-item-image" style="width: 140px; height: 105px; flex-shrink: 0;">
+                            <img src="${blog.image_url}" alt="${blog.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                        </div>
+                    ` : ''}
                 </div>
-                ${blog.image_url ? `
-                <div style="width: 140px; height: 140px; margin-left: 2rem;">
-                    <img src="${blog.image_url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
-                </div>
-                ` : ''}
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         app.innerHTML = `
             <div style="max-width: 700px; margin: 4rem auto; padding: 0 1rem;">

@@ -6,10 +6,19 @@ async function dashboardPage() {
         ]);
 
         let blogsHtml = blogs.map(blog => `
-            <div class="blog-item" style="align-items: center;">
-                <div class="blog-item-content">
-                    <h2 class="serif">${blog.title}</h2>
-                    <div class="blog-date">Last updated: ${new Date(blog.updated_at || blog.created_at).toLocaleDateString()}</div>
+            <div class="blog-item" style="display: flex; justify-content: space-between; align-items: center; gap: 2rem;">
+                <div style="display: flex; gap: 1.5rem; align-items: center; flex: 1;">
+                    ${blog.image_url ? `
+                        <div style="width: 80px; height: 60px; flex-shrink: 0;">
+                            <img src="${blog.image_url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                        </div>
+                    ` : `
+                        <div style="width: 80px; height: 60px; background: var(--border); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--text-muted);">No image</div>
+                    `}
+                    <div class="blog-item-content">
+                        <h2 class="serif" style="font-size: 1.25rem;">${blog.title}</h2>
+                        <div class="blog-date">Last updated: ${new Date(blog.updated_at || blog.created_at).toLocaleDateString()}</div>
+                    </div>
                 </div>
                 <div style="display: flex; gap: 0.75rem;">
                     <a href="/edit-blog/${blog.id}" class="btn btn-outline" data-link>Edit</a>
