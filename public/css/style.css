@@ -4,7 +4,7 @@
     --accent: #1a8917;
     --bg: #ffffff;
     --border: #f2f2f2;
-    --sidebar-w: 260px;
+    --sidebar-w: 280px;
     --max-w: 1192px;
     --text-main: #242424;
     --text-muted: #6b6b6b;
@@ -98,11 +98,11 @@ aside {
 
 .search-input {
     width: 100%;
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    padding: 0.75rem 1rem 0.75rem 2.2rem;
     border: 1px solid var(--border);
     border-radius: 100px;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     transition: all 0.2s;
     background: #f9f9f9;
 }
@@ -116,7 +116,7 @@ aside {
 
 .search-icon {
     position: absolute;
-    left: 1rem;
+    left: 0.85rem;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);

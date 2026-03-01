@@ -58,12 +58,13 @@ async function homePage(params) {
         `).join('');
 
         let usersHtml = '';
-        if (users && users.length > 0) {
+        const filteredUsers = users.filter(u => u.id != auth.user?.id);
+        if (filteredUsers && filteredUsers.length > 0) {
             usersHtml = `
                 <div style="margin-bottom: 2rem; background: var(--surface); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);">
                     <h3 style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem;">Users</h3>
                     <div style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem; scrollbar-width: none;">
-                        ${users.map(u => {
+                        ${filteredUsers.map(u => {
                 const initial = (u.name || 'U').charAt(0).toUpperCase();
                 const isFollowing = u.is_following;
                 const btnClass = isFollowing ? 'btn btn-outline' : 'btn btn-primary';

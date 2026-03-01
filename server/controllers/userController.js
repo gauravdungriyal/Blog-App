@@ -282,6 +282,8 @@ exports.searchUsers = async (req, res) => {
             .select('id, name, avatar_url, username')
             .or(`username.ilike.%${query}%,name.ilike.%${query}%`);
 
+        console.log(`Searching for users with query: "${query}", excluding userId: "${currentUserId}"`);
+
         if (currentUserId) {
             queryBuilder = queryBuilder.neq('id', currentUserId);
         }
