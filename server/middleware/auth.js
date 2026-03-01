@@ -1,4 +1,5 @@
-const { supabase } = require('../config/supabase');
+const { supabase, supabaseUrl, supabaseAnonKey } = require('../config/supabase');
+const { createClient } = require('@supabase/supabase-js');
 
 const authMiddleware = async (req, res, next) => {
     try {
@@ -15,6 +16,13 @@ const authMiddleware = async (req, res, next) => {
         }
 
         req.user = user;
+        req.supabase = createClient(supabaseUrl, supabaseAnonKey, {
+            global: {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        });
         next();
     } catch (err) {
         console.error('Auth Middleware Error:', err);

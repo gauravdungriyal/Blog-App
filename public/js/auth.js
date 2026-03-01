@@ -49,10 +49,26 @@ const auth = {
             navHtml += `
                 <li><a href="/dashboard" data-link><i class="icon">📊</i> Dashboard</a></li>
                 <li><a href="/create-blog" data-link><i class="icon">✍️</i> Write</a></li>
+                <li>
+                    <a href="/notifications" data-link style="display: flex; align-items: center; justify-content: space-between;">
+                        <span><i class="icon">🔔</i> Notifications</span>
+                        <span id="nav-notification-badge" style="background: var(--primary); color: white; border-radius: 50%; font-size: 0.75rem; padding: 2px 6px; display: none;">0</span>
+                    </a>
+                </li>
             `;
+
+            const firstLetter = (this.user.name || this.user.email || 'U').charAt(0).toUpperCase();
+            const fallbackHtml = `<div style="width: 32px; height: 32px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; color: var(--text); font-weight: bold;">${firstLetter}</div>`;
+            const avatarHtml = this.user.avatar_url
+                ? `<img src="${this.user.avatar_url}" alt="${this.user.name}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border);" onerror="this.onerror=null; this.outerHTML='${fallbackHtml.replace(/'/g, "\\'").replace(/"/g, '&quot;')}';">`
+                : fallbackHtml;
+
             authHtml = `
                 <div style="padding: 1rem;">
-                    <p class="author-name" style="margin-bottom: 0.5rem;">${this.user.email.split('@')[0]}</p>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                        ${avatarHtml}
+                        <p class="author-name" style="margin: 0; text-transform: capitalize; font-weight: 600;">${this.user.name || this.user.email.split('@')[0]}</p>
+                    </div>
                     <button class="btn btn-outline" style="width: 100%" onclick="auth.logout()">Logout</button>
                 </div>
             `;
@@ -65,18 +81,36 @@ const auth = {
             `;
         }
 
-        sidebarNav.innerHTML = navHtml;
-        authSection.innerHTML = authHtml;
+        if (sidebarNav) sidebarNav.innerHTML = navHtml;
+        if (authSection) authSection.innerHTML = authHtml;
+
+        // Fetch unread notifications asynchronously after DOM injection
+        if (this.isAuthenticated()) {
+            getNotifications().then(notifications => {
+                const unreadCount = notifications.filter(n => !n.is_read).length;
+                const badge = document.getElementById('nav-notification-badge');
+                if (badge) {
+                    if (unreadCount > 0) {
+                        badge.innerText = unreadCount > 9 ? '9+' : unreadCount;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            }).catch(err => console.error('Failed to load notification badge', err));
+        }
 
         // Mark active link
         const currentPath = window.location.pathname;
-        sidebarNav.querySelectorAll('a').forEach(a => {
-            if (a.getAttribute('href') === currentPath) {
-                a.classList.add('active');
-            } else {
-                a.classList.remove('active');
-            }
-        });
+        if (sidebarNav) {
+            sidebarNav.querySelectorAll('a').forEach(a => {
+                if (a.getAttribute('href') === currentPath) {
+                    a.classList.add('active');
+                } else {
+                    a.classList.remove('active');
+                }
+            });
+        }
     }
 };
 

@@ -12,8 +12,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Use service role for admin operations (like seeding)
-const supabaseAdmin = supabaseServiceRoleKey 
+const supabaseAdmin = supabaseServiceRoleKey
     ? createClient(supabaseUrl, supabaseServiceRoleKey)
     : null;
 
-module.exports = { supabase, supabaseAdmin };
+module.exports = { supabase, supabaseAdmin, supabaseUrl, supabaseAnonKey };

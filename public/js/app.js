@@ -6,6 +6,7 @@ const routes = {
     '/login': loginPage,
     '/register': registerPage,
     '/dashboard': dashboardPage,
+    '/notifications': renderNotifications,
     '/blog/:id': blogDetailPage,
     '/create-blog': createBlogPage,
     '/edit-blog/:id': createBlogPage // Reusing create page for edit
@@ -44,7 +45,7 @@ const router = {
         }
 
         // Protected routes check
-        const protectedRoutes = ['/dashboard', '/create-blog', '/edit-blog'];
+        const protectedRoutes = ['/dashboard', '/create-blog', '/edit-blog', '/notifications'];
         if (protectedRoutes.some(pr => path.startsWith(pr)) && !auth.isAuthenticated()) {
             this.navigate('/login');
             return;
