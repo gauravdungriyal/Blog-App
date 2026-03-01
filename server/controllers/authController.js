@@ -18,10 +18,18 @@ exports.logout = async (req, res) => {
 exports.googleLogin = async (req, res) => {
     console.log("HIT /auth/google ENPOINT!");
     try {
+        // Dynamically determine the redirect URL based on the request
+        const protocol = req.protocol;
+        const host = req.get('host');
+        const baseUrl = process.env.API_URL || `${protocol}://${host}`;
+        const redirectTo = `${baseUrl}/api/auth/google/callback`;
+
+        console.log("Redirecting to:", redirectTo);
+
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${process.env.API_URL || 'http://localhost:5000'}/api/auth/google/callback`
+                redirectTo: redirectTo
             }
         });
 

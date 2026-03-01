@@ -14,6 +14,9 @@ const initStorage = require('./initStorage');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy for HTTPS detection in production
+app.set('trust proxy', true);
+
 // Middleware
 app.use(cors({
     origin: true, // Allow all for dev
