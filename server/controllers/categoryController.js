@@ -69,6 +69,20 @@ ${hashtags || 'None'}
 
     } catch (err) {
         console.error('DetectCategory Error:', err);
-        res.status(500).json({ error: 'Failed to detect category' });
+
+        // Fallback: try to fetch from hashtags if AI fails
+        if (hashtags) {
+            const tagList = hashtags.toLowerCase().split(/[#\s,]+/).filter(t => t);
+            const match = ALLOWED_CATEGORIES.find(cat =>
+                tagList.some(tag => cat.toLowerCase().includes(tag) || tag.includes(cat.toLowerCase().replace('&', '').replace(' ', '')))
+            );
+            if (match) {
+                console.log('Fallback to hashtag match:', match);
+                return res.status(200).json({ category: match });
+            }
+        }
+
+        // Final fallback
+        res.status(200).json({ category: 'Lifestyle' });
     }
 };

@@ -44,7 +44,7 @@ async function createBlogPage(params) {
                     placeholder="Tell your story...">${blog.content}</textarea>
 
                 <div style="margin-top: 2rem;">
-                    <input type="text" id="hashtags" placeholder="Hashtags (e.g. #tech #news)" 
+                    <input type="text" id="hashtags" placeholder="Hashtags (e.g. #tech #news)" required
                         style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-card); color: var(--text-color);">
                 </div>
 
