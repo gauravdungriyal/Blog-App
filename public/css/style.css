@@ -164,24 +164,21 @@ h3 {
 }
 
 .blog-item {
-    padding: 2rem 0;
+    padding: 2.5rem 0;
     border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
-    gap: 2rem;
+    gap: 3rem;
     cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.blog-item:hover {
+    opacity: 0.85;
 }
 
 .blog-item-content {
     flex: 1;
-}
-
-.blog-item-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    margin-bottom: 0.5rem;
 }
 
 .author-name {
@@ -194,8 +191,8 @@ h3 {
 }
 
 .blog-item h2 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
     color: var(--text-main);
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -205,7 +202,7 @@ h3 {
 }
 
 .blog-item .excerpt {
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: var(--text-muted);
     display: -webkit-box;
     -webkit-line-clamp: 2;

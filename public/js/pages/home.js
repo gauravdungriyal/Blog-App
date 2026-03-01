@@ -106,14 +106,30 @@ async function homePage(params) {
         app.innerHTML = `
             <div class="content-grid-single">
                 <div class="blog-feed">
-                    ${categoryNavHtml}
-                    <div style="border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem;">
-                        <h3 style="font-size: 0.9rem; text-transform: uppercase; color: var(--text-muted);">
-                            ${search ? `Results for "${search}"` : (activeCategory ? activeCategory : 'For you')}
-                        </h3>
+                    <div style="margin-bottom: 2.5rem;">
+                        <h1 class="serif" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 2rem;">Latest Stories</h1>
                     </div>
                     ${usersHtml}
-                    ${blogsHtml || (search || activeCategory ? `<p>No stories found.</p>` : '<p>No stories yet. Start writing today!</p>')}
+                    <div class="blogs-container">
+                        ${blogs.map(blog => {
+            const date = new Date(blog.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            return `
+                                <div class="blog-item" onclick="router.navigate('/blog/${blog.id}')" style="display: flex; justify-content: space-between; gap: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--border); cursor: pointer;">
+                                    <div class="blog-item-content" style="flex: 1;">
+                                        ${blog.category ? `<div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">${blog.category}</div>` : ''}
+                                        <h2 class="serif" style="font-size: 1.6rem; margin-bottom: 0.75rem; color: var(--text-main); line-height: 1.25;">${blog.title}</h2>
+                                        <p class="excerpt" style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${blog.content}</p>
+                                        <div style="font-size: 0.85rem; color: var(--text-muted);">${date}</div>
+                                    </div>
+                                    ${blog.image_url ? `
+                                        <div class="blog-item-image" style="width: 160px; height: 120px; flex-shrink: 0;">
+                                            <img src="${blog.image_url}" alt="${blog.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+        }).join('') || (search || activeCategory ? `<p>No stories found.</p>` : '<p>No stories yet. Start writing today!</p>')}
+                    </div>
                 </div>
             </div>
         `;
