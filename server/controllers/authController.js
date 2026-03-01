@@ -16,15 +16,21 @@ exports.logout = async (req, res) => {
 
 // Initiate Google OAuth login
 exports.googleLogin = async (req, res) => {
-    console.log("HIT /auth/google ENPOINT!");
     try {
         // Dynamically determine the redirect URL based on the request
-        const protocol = req.protocol;
+        let protocol = req.protocol;
         const host = req.get('host');
+
+        // Force HTTPS in production-like environments if not already
+        if (!host.includes('localhost') && !host.includes('127.0.0.1')) {
+            protocol = 'https';
+        }
+
         const baseUrl = process.env.API_URL || `${protocol}://${host}`;
         const redirectTo = `${baseUrl}/api/auth/google/callback`;
 
-        console.log("Redirecting to:", redirectTo);
+        console.log("Login Request Info - Host:", host, "Protocol:", req.protocol, "Effective Protocol:", protocol);
+        console.log("Using Redirect URL:", redirectTo);
 
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
