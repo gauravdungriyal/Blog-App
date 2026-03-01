@@ -4,7 +4,7 @@
     --accent: #1a8917;
     --bg: #ffffff;
     --border: #f2f2f2;
-    --sidebar-w: 240px;
+    --sidebar-w: 260px;
     --max-w: 1192px;
     --text-main: #242424;
     --text-muted: #6b6b6b;
@@ -102,7 +102,7 @@ aside {
     border: 1px solid var(--border);
     border-radius: 100px;
     font-family: inherit;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: all 0.2s;
     background: #f9f9f9;
 }
@@ -497,6 +497,7 @@ h3 {
     border-radius: 6px;
     font-family: inherit;
 }
+
 /* Category Navigation */
 .category-nav {
     display: flex;
@@ -505,11 +506,13 @@ h3 {
     padding: 1rem 0;
     margin-bottom: 2rem;
     border-bottom: 1px solid var(--border-color);
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
+    /* Firefox */
 }
 
 .category-nav::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+    display: none;
+    /* Chrome, Safari, Opera */
 }
 
 .category-item {
@@ -522,7 +525,8 @@ h3 {
     cursor: pointer;
 }
 
-.category-item:hover, .category-item.active {
+.category-item:hover,
+.category-item.active {
     color: var(--text-color);
 }
 
