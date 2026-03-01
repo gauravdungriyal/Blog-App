@@ -43,6 +43,32 @@ async function createBlogPage(params) {
                     style="width: 100%; border: none; font-size: 1.25rem; font-family: var(--font-serif); outline: none; resize: none; min-height: 500px;" 
                     placeholder="Tell your story...">${blog.content}</textarea>
                 
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Category</label>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <select id="category" required style="padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-color); font-size: 1rem;">
+                            <option value="">Select a category</option>
+                            <option value="Technology" ${blog.category === 'Technology' ? 'selected' : ''}>Technology</option>
+                            <option value="Lifestyle" ${blog.category === 'Lifestyle' ? 'selected' : ''}>Lifestyle</option>
+                            <option value="Health & Fitness" ${blog.category === 'Health & Fitness' ? 'selected' : ''}>Health & Fitness</option>
+                            <option value="Travel" ${blog.category === 'Travel' ? 'selected' : ''}>Travel</option>
+                            <option value="Food & Recipes" ${blog.category === 'Food & Recipes' ? 'selected' : ''}>Food & Recipes</option>
+                            <option value="Education" ${blog.category === 'Education' ? 'selected' : ''}>Education</option>
+                            <option value="Finance & Business" ${blog.category === 'Finance & Business' ? 'selected' : ''}>Finance & Business</option>
+                            <option value="Entertainment & Sports" ${blog.category === 'Entertainment & Sports' ? 'selected' : ''}>Entertainment & Sports</option>
+                        </select>
+                        <button type="button" id="suggest-cat-btn" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                            ✨ Suggest with AI
+                        </button>
+                    </div>
+                    <p id="suggestion-tip" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted); display: none;"></p>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <input type="text" id="hashtags" placeholder="Hashtags (e.g. #tech #news)" 
+                        style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-card); color: var(--text-color);">
+                </div>
+
                 <div style="position: fixed; top: 1.5rem; right: 2rem; z-index: 1000;">
                     <button type="submit" class="btn btn-accent" id="publish-btn">${isEdit ? 'Update' : 'Publish'}</button>
                 </div>
@@ -83,6 +109,42 @@ async function createBlogPage(params) {
         }
     });
 
+    // Handle AI suggestion button
+    document.getElementById('suggest-cat-btn').addEventListener('click', async () => {
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+        const hashtags = document.getElementById('hashtags').value;
+        const suggestBtn = document.getElementById('suggest-cat-btn');
+        const tip = document.getElementById('suggestion-tip');
+
+        if (!title || !content) {
+            showToast('Please enter title and content first');
+            return;
+        }
+
+        suggestBtn.disabled = true;
+        suggestBtn.innerText = '✨ Analyzing...';
+        tip.style.display = 'none';
+
+        try {
+            const res = await detectCategory(title, content, hashtags);
+            if (res && res.category) {
+                document.getElementById('category').value = res.category;
+                tip.innerText = `AI Suggestion: ${res.category}`;
+                tip.style.display = 'block';
+                showToast(`Suggested: ${res.category}`, 'success');
+            } else {
+                showToast('AI could not determine a category', 'info');
+            }
+        } catch (err) {
+            showToast('AI suggestion failed');
+            console.error(err);
+        } finally {
+            suggestBtn.disabled = false;
+            suggestBtn.innerText = '✨ Suggest with AI';
+        }
+    });
+
     document.getElementById('blog-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const publishBtn = document.getElementById('publish-btn');
@@ -93,8 +155,34 @@ async function createBlogPage(params) {
         const title = document.getElementById('title').value;
         const content = document.getElementById('content').value;
         const coverFile = document.getElementById('cover-image-file').files[0];
+        const hashtags = document.getElementById('hashtags').value;
+        let category = document.getElementById('category').value;
 
         try {
+            // Auto-detect if no category selected
+            if (!category) {
+                publishBtn.innerText = 'Analyzing content...';
+                try {
+                    const suggestion = await detectCategory(title, content, hashtags);
+                    if (suggestion && suggestion.category) {
+                        category = suggestion.category;
+                        document.getElementById('category').value = category;
+                        showToast(`AI suggested: ${category}`, 'info');
+                    }
+                } catch (catErr) {
+                    console.error('Auto-detection failed:', catErr);
+                }
+            }
+
+            if (!category) {
+                showToast('Please select a category before publishing.');
+                publishBtn.innerText = originalText;
+                publishBtn.disabled = false;
+                return;
+            }
+
+            publishBtn.innerText = 'Saving...';
+
             let image_url = blog.image_url;
 
             if (coverFile) {
@@ -107,7 +195,7 @@ async function createBlogPage(params) {
 
             await apiRequest(endpoint, {
                 method,
-                body: JSON.stringify({ title, content, image_url })
+                body: JSON.stringify({ title, content, image_url, category })
             });
 
             showToast(isEdit ? 'Blog updated!' : 'Blog published!', 'success');

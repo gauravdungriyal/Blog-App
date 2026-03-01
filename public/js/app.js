@@ -87,4 +87,34 @@ window.router = router;
 window.showToast = showToast;
 
 // Initialize
-auth.init().then(() => router.resolve());
+auth.init().then(() => {
+    router.resolve();
+
+    // Setup Search
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        let debounceTimer;
+        searchInput.addEventListener('input', e => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const query = e.target.value.trim();
+                if (query) {
+                    router.navigate(`/?search=${encodeURIComponent(query)}`);
+                } else {
+                    router.navigate('/');
+                }
+            }, 500);
+        });
+
+        searchInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter') {
+                const query = e.target.value.trim();
+                if (query) {
+                    router.navigate(`/?search=${encodeURIComponent(query)}`);
+                } else {
+                    router.navigate('/');
+                }
+            }
+        });
+    }
+});

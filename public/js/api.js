@@ -146,6 +146,18 @@ async function uploadBlogImage(file) {
     });
 }
 
+async function detectCategory(title, content, hashtags = '') {
+    const token = localStorage.getItem('token');
+    return apiRequest('/blogs/detect-category', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ title, content, hashtags })
+    });
+}
+
 async function getFollowersList(userId) {
     const currentUserId = auth.user?.id;
     let url = `/users/${userId}/followers`;

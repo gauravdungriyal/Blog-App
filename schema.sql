@@ -13,6 +13,7 @@ CREATE TABLE blogs (
     content TEXT NOT NULL,
     author_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
     image_url TEXT,
+    category TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
