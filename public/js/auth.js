@@ -41,17 +41,17 @@ const auth = {
         const authSection = document.getElementById('auth-section');
 
         let navHtml = `
-            <li><a href="/" data-link><i class="icon">🏠</i> Home</a></li>
+            <li><a href="/" data-link><img src="/icons/house.png" class="nav-icon" alt="Home"> Home</a></li>
         `;
         let authHtml = '';
 
         if (this.isAuthenticated()) {
             navHtml += `
-                <li><a href="/dashboard" data-link><i class="icon">📊</i> Dashboard</a></li>
-                <li><a href="/create-blog" data-link><i class="icon">✍️</i> Write</a></li>
+                <li><a href="/dashboard" data-link><img src="/icons/dashboard.png" class="nav-icon" alt="Dashboard"> Dashboard</a></li>
+                <li><a href="/create-blog" data-link><img src="/icons/write.png" class="nav-icon" alt="Write"> Write</a></li>
                 <li>
                     <a href="/notifications" data-link style="display: flex; align-items: center; justify-content: space-between;">
-                        <span><i class="icon">🔔</i> Notifications</span>
+                        <span><img src="/icons/notification.png" class="nav-icon" alt="Notifications"> Notifications</span>
                         <span id="nav-notification-badge" style="background: var(--primary); color: white; border-radius: 50%; font-size: 0.75rem; padding: 2px 6px; display: none;">0</span>
                     </a>
                 </li>
