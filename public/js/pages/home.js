@@ -97,11 +97,12 @@ async function homePage(params) {
                                         <p class="excerpt" style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${blog.content}</p>
                                         <div style="font-size: 0.85rem; color: var(--text-muted);">${date}</div>
                                     </div>
-                                    ${blog.image_url ? `
-                                        <div class="blog-item-image" style="width: 160px; height: 120px; flex-shrink: 0;">
-                                            <img src="${blog.image_url}" alt="${blog.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
-                                        </div>
-                                    ` : ''}
+                                    <div class="blog-item-image">
+                                        ${blog.image_url
+                    ? `<img src="${blog.image_url}" alt="${blog.title}">`
+                    : `<div class="blog-placeholder">${(blog.category || blog.title || 'B')[0].toUpperCase()}</div>`
+                }
+                                    </div>
                                 </div>
                             `;
         }).join('') || (search || activeCategory ? `<p>No stories found.</p>` : '<p>No stories yet. Start writing today!</p>')}
