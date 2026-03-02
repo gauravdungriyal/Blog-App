@@ -92,7 +92,10 @@ async function homePage(params) {
             return `
                                 <div class="blog-item" onclick="router.navigate('/blog/${blog.id}')" style="display: flex; justify-content: space-between; gap: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--border); cursor: pointer;">
                                     <div class="blog-item-content" style="flex: 1;">
-                                        ${blog.category ? `<div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">${blog.category}</div>` : ''}
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                                            <span style="font-weight: 600; color: var(--text-main);">${blog.profiles?.name || 'Anonymous'}</span>
+                                            ${blog.category ? `<span>in</span><span style="color: var(--accent); font-weight: 500;">${blog.category}</span>` : ''}
+                                        </div>
                                         <h2 class="serif" style="font-size: 1.6rem; margin-bottom: 0.75rem; color: var(--text-main); line-height: 1.25;">${blog.title}</h2>
                                         <p class="excerpt" style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${blog.content}</p>
                                         <div style="font-size: 0.85rem; color: var(--text-muted);">${date}</div>

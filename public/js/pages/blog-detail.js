@@ -4,7 +4,16 @@ async function blogDetailPage(params) {
         const currentUser = auth.user;
 
         app.innerHTML = `
-            <article style="max-width: 680px; margin: 4rem auto; padding: 0 1rem;">
+            <article style="max-width: 680px; margin: 2rem auto 4rem; padding: 0 1rem;">
+                <nav style="margin-bottom: 2rem;">
+                    <a href="/" data-link style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Back to feed
+                    </a>
+                </nav>
                 <header style="margin-bottom: 3rem;">
                     <h1 class="serif" style="font-size: 3rem; margin-bottom: 2rem;">${blog.title}</h1>
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
