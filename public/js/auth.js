@@ -102,7 +102,11 @@ const auth = {
             }).catch(err => console.error('Failed to load notification badge', err));
         }
 
-        // Mark active link
+        this.updateActiveNavLink();
+    },
+
+    updateActiveNavLink() {
+        const sidebarNav = document.getElementById('sidebar-nav');
         const currentPath = window.location.pathname;
         if (sidebarNav) {
             sidebarNav.querySelectorAll('a').forEach(a => {

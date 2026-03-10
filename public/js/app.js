@@ -61,6 +61,7 @@ const router = {
             app.innerHTML = '<p class="alert alert-error">Error loading page.</p>';
         }
         loader.style.display = 'none';
+        auth.updateActiveNavLink();
     }
 };
 
