@@ -123,19 +123,22 @@ exports.googleSession = async (req, res) => {
         });
 
         // Ensure user has a profile record
-        const name = user.user_metadata?.full_name || user.email.split('@')[0];
-        const avatar_url = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
-
-        // Check if profile exists to determine if we need to generate a username
-        const { data: existingProfile } = await supabaseAdmin
+        // Check if profile exists to determine if we need to update it or create a new one
+        const { data: existingProfile, error: profileFetchError } = await supabaseAdmin
             .from('profiles')
-            .select('username')
+            .select('*')
             .eq('id', user.id)
             .single();
 
+        let name = existingProfile?.name;
+        let avatar_url = existingProfile?.avatar_url;
         let username = existingProfile?.username;
 
-        if (!username) {
+        if (!existingProfile) {
+            // New user: Use Google metadata
+            name = user.user_metadata?.full_name || user.email.split('@')[0];
+            avatar_url = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
+
             // Generate unique username
             const base = (user.user_metadata?.full_name || user.email.split('@')[0])
                 .toLowerCase()
@@ -155,15 +158,15 @@ exports.googleSession = async (req, res) => {
             if (collision) {
                 username = `${username}${Math.random().toString(36).substring(7, 10)}`;
             }
-        }
 
-        // Try to insert cleanly; if it exists, it ignores or updates
-        const { error: profileError } = await supabaseAdmin
-            .from('profiles')
-            .upsert({ id: user.id, name, avatar_url, username }, { onConflict: 'id' });
+            // Create initial profile
+            const { error: insertError } = await supabaseAdmin
+                .from('profiles')
+                .insert({ id: user.id, name, avatar_url, username });
 
-        if (profileError) {
-            console.error('Profile Upsert Error during Google Login:', profileError);
+            if (insertError) {
+                console.error('Profile Insert Error during Google Login:', insertError);
+            }
         }
 
         res.status(200).json({
