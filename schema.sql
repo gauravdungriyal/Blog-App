@@ -124,7 +124,7 @@ CREATE TABLE notifications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
     actor_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-    type TEXT NOT NULL CHECK (type IN ('like', 'comment', 'new_post')),
+    type TEXT NOT NULL CHECK (type IN ('like', 'comment', 'new_post', 'follow')),
     reference_id UUID, -- Optional ID linking to the comment or blog post
     is_read BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
