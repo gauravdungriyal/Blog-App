@@ -35,6 +35,16 @@ exports.toggleFollow = async (req, res) => {
                 .from('follows')
                 .insert([{ follower_id, following_id }]);
             if (insertError) throw insertError;
+
+            // Fire notification asynchronously
+            req.supabase.from('notifications')
+                .insert([{
+                    user_id: following_id,
+                    actor_id: follower_id,
+                    type: 'follow'
+                }])
+                .then(() => { });
+
             return res.status(201).json({ message: 'Followed successfully', isFollowing: true });
         }
     } catch (err) {

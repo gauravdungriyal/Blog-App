@@ -37,6 +37,9 @@ async function renderNotifications() {
                 } else if (notif.type === 'new_post') {
                     icon = '📝';
                     text = `<strong>${notif.actor?.name || 'Someone'}</strong> published a new story`;
+                } else if (notif.type === 'follow') {
+                    icon = '👤';
+                    text = `<strong>${notif.actor?.name || 'Someone'}</strong> started following you`;
                 }
 
                 // Format timestamp
@@ -97,6 +100,12 @@ window.handleNotificationClick = async (notifId, referenceId, type) => {
                 router.navigate(`/blog/${referenceId}`);
             } else {
                 router.navigate('/dashboard'); // Fallback
+            }
+        } else if (type === 'follow') {
+            if (notif.actor?.username) {
+                router.navigate(`/u/${notif.actor.username}`);
+            } else {
+                router.navigate('/dashboard');
             }
         }
     } catch (error) {
